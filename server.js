@@ -1,4 +1,5 @@
 const express = require('express');
+<<<<<<< HEAD
 const { exec } = require('child_process');
 const os = require('os');
 const app = express();
@@ -51,6 +52,11 @@ function openDesktopApp(appName) {
   return false;
 }
 
+=======
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -79,6 +85,7 @@ function processCommand(command) {
     return { response: `Today is ${date}`, action: 'speak' };
   }
   
+<<<<<<< HEAD
   // Open applications (Desktop version)
   if (cmd.match(/open (\w+)/)) {
     const app = cmd.match(/open (\w+)/)[1];
@@ -95,6 +102,35 @@ function processCommand(command) {
     } else {
       return { 
         response: `I couldn't find ${app} on your system. Try asking me to search for it instead.`, 
+=======
+  // Open applications (Web version limitation)
+  if (cmd.match(/open (\w+)/)) {
+    const app = cmd.match(/open (\w+)/)[1];
+    
+    // Web alternatives for common apps
+    const webAlternatives = {
+      'calculator': 'https://www.google.com/search?q=calculator',
+      'notepad': 'https://www.google.com/search?q=online+notepad',
+      'calendar': 'https://calendar.google.com',
+      'mail': 'https://mail.google.com',
+      'gmail': 'https://mail.google.com',
+      'youtube': 'https://youtube.com',
+      'maps': 'https://maps.google.com',
+      'drive': 'https://drive.google.com',
+      'docs': 'https://docs.google.com',
+      'sheets': 'https://sheets.google.com'
+    };
+    
+    if (webAlternatives[app]) {
+      return { 
+        response: `Opening ${app} in your browser...`, 
+        action: 'open_url', 
+        url: webAlternatives[app] 
+      };
+    } else {
+      return { 
+        response: `I cannot open desktop applications in web mode. However, I can search for ${app} online or open web-based alternatives. Try asking me to search for something instead!`, 
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
         action: 'speak' 
       };
     }
@@ -119,7 +155,11 @@ function processCommand(command) {
   // Help
   if (cmd.match(/help|what can you do|commands/)) {
     return { 
+<<<<<<< HEAD
       response: 'I can help you with: Opening applications, Searching the web, Telling time and date, Providing weather updates, Reading news, and much more. Just ask me!', 
+=======
+      response: 'I can help you with: Searching the web, Telling time and date, Opening web apps like Gmail, Calendar, YouTube, Providing weather updates, Reading news, and much more. Just ask me!', 
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
       action: 'speak' 
     };
   }
@@ -135,7 +175,11 @@ function processCommand(command) {
   }
   
   // Default
+<<<<<<< HEAD
   return { response: 'I am not sure how to help with that. Try asking me to open an application, search something, or tell you the time.', action: 'speak' };
+=======
+  return { response: 'I am not sure how to help with that. Try asking me to search something, tell you the time, or open a web app like Gmail or YouTube.', action: 'speak' };
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
 }
 
 app.post('/command', (req, res) => {
@@ -150,4 +194,8 @@ app.get('/health', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🤖 JARVIS is running on port ${PORT}`);
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a

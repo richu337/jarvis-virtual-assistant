@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 // Detect if running in Electron
 const isElectron = navigator.userAgent.toLowerCase().includes('electron');
 console.log('Running in Electron:', isElectron);
 
+=======
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
 const commandInput = document.getElementById('commandInput');
 const sendBtn = document.getElementById('sendBtn');
 const voiceBtn = document.getElementById('voiceBtn');
@@ -10,7 +13,13 @@ const statusDot = document.getElementById('statusDot');
 const statusText = document.getElementById('statusText');
 
 let recognition = null;
+<<<<<<< HEAD
 let isListening = false;
+=======
+let wakeWordRecognition = null;
+let isListening = false;
+let isWakeWordActive = true;
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
 
 // Initialize speech recognition if available
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -23,11 +32,15 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   recognition.lang = 'en-US';
   
   recognition.onstart = () => {
+<<<<<<< HEAD
     console.log('✅ Recognition started');
+=======
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
     isListening = true;
     voiceBtn.classList.add('listening');
     statusDot.classList.add('listening');
     statusText.textContent = 'Listening for command...';
+<<<<<<< HEAD
     addMessage('🎤 Listening... Speak now!', false);
   };
   
@@ -37,15 +50,26 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     console.log('Transcript:', transcript);
     commandInput.value = transcript;
     addMessage(`You said: "${transcript}"`, true);
+=======
+  };
+  
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    commandInput.value = transcript;
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
     sendCommand();
   };
   
   recognition.onend = () => {
+<<<<<<< HEAD
     console.log('Recognition ended');
+=======
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
     isListening = false;
     voiceBtn.classList.remove('listening');
     statusDot.classList.remove('listening');
     statusText.textContent = 'Ready';
+<<<<<<< HEAD
   };
   
   recognition.onerror = (event) => {
@@ -58,18 +82,137 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       addMessage(`❌ Error: ${event.error}. Please check microphone permissions.`, false);
     }
     
+=======
+    
+    // Restart wake word detection after command is processed
+    setTimeout(() => {
+      if (isWakeWordActive) {
+        startWakeWordDetection();
+      }
+    }, 1000);
+  };
+  
+  recognition.onerror = (event) => {
+    console.error('Speech recognition error:', event.error);
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
     isListening = false;
     voiceBtn.classList.remove('listening');
     statusDot.classList.remove('listening');
     statusText.textContent = 'Ready';
+<<<<<<< HEAD
   };
   
 } else {
   console.error('Speech recognition not supported');
+=======
+    
+    // Restart wake word detection on error
+    setTimeout(() => {
+      if (isWakeWordActive) {
+        startWakeWordDetection();
+      }
+    }, 1000);
+  };
+  
+  // Wake word detection (continuous listening)
+  wakeWordRecognition = new SpeechRecognition();
+  wakeWordRecognition.continuous = true;
+  wakeWordRecognition.interimResults = true;
+  wakeWordRecognition.lang = 'en-US';
+  
+  wakeWordRecognition.onresult = (event) => {
+    const transcript = Array.from(event.results)
+      .map(result => result[0].transcript)
+      .join('')
+      .toLowerCase();
+    
+    // Check for wake words
+    if (transcript.includes('jarvis') || 
+        transcript.includes('hey jarvis') || 
+        transcript.includes('ok jarvis') ||
+        transcript.includes('hello jarvis')) {
+      
+      // Stop wake word detection
+      wakeWordRecognition.stop();
+      
+      // Play activation sound/feedback
+      speak('Yes, I am listening');
+      
+      // Start command recognition after a short delay
+      setTimeout(() => {
+        if (!isListening) {
+          recognition.start();
+        }
+      }, 1500);
+    }
+  };
+  
+  wakeWordRecognition.onerror = (event) => {
+    if (event.error === 'no-speech' || event.error === 'audio-capture') {
+      // Restart wake word detection on common errors
+      setTimeout(() => {
+        if (isWakeWordActive && !isListening) {
+          startWakeWordDetection();
+        }
+      }, 1000);
+    }
+  };
+  
+  wakeWordRecognition.onend = () => {
+    // Auto-restart wake word detection if it stops
+    if (isWakeWordActive && !isListening) {
+      setTimeout(() => {
+        startWakeWordDetection();
+      }, 500);
+    }
+  };
+  
+} else {
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
   voiceBtn.style.display = 'none';
   addMessage('Voice recognition is not supported in your browser. Please use Chrome, Edge, or Safari.', false);
 }
 
+<<<<<<< HEAD
+=======
+// Start wake word detection
+function startWakeWordDetection() {
+  if (wakeWordRecognition && !isListening) {
+    try {
+      wakeWordRecognition.start();
+      statusText.textContent = 'Say "Jarvis" to activate';
+      statusDot.style.background = '#00ff88';
+    } catch (error) {
+      console.log('Wake word detection already running');
+    }
+  }
+}
+
+// Stop wake word detection
+function stopWakeWordDetection() {
+  if (wakeWordRecognition) {
+    isWakeWordActive = false;
+    wakeWordRecognition.stop();
+    statusText.textContent = 'Wake word disabled';
+    statusDot.style.background = '#ff6666';
+  }
+}
+
+// Toggle wake word detection
+function toggleWakeWord() {
+  if (isWakeWordActive) {
+    stopWakeWordDetection();
+    voiceBtn.textContent = '🔴';
+    voiceBtn.title = 'Wake word OFF - Click to enable';
+  } else {
+    isWakeWordActive = true;
+    startWakeWordDetection();
+    voiceBtn.textContent = '🎤';
+    voiceBtn.title = 'Wake word ON - Say "Jarvis" to activate';
+  }
+}
+
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
 // Text-to-speech function
 function speak(text) {
   if ('speechSynthesis' in window) {
@@ -177,6 +320,7 @@ commandInput.addEventListener('keypress', (e) => {
   }
 });
 
+<<<<<<< HEAD
 // Voice button - click to speak
 voiceBtn.addEventListener('click', () => {
   console.log('🎤 Voice button clicked');
@@ -206,6 +350,10 @@ voiceBtn.addEventListener('click', () => {
     }
   }
 });
+=======
+// Voice button now toggles wake word detection
+voiceBtn.addEventListener('click', toggleWakeWord);
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
 
 // Load voices when available
 if ('speechSynthesis' in window) {
@@ -214,6 +362,7 @@ if ('speechSynthesis' in window) {
   };
 }
 
+<<<<<<< HEAD
 // Initial greeting
 setTimeout(() => {
   if (isElectron) {
@@ -231,3 +380,16 @@ setTimeout(() => {
     addMessage('💡 Try saying: "open calculator" or "what time is it"', false);
   }
 }, 1000);
+=======
+// Initial greeting and start wake word detection
+setTimeout(() => {
+  speak('Hello! I am JARVIS, your virtual assistant. Say "Jarvis" anytime to activate me.');
+  addMessage('👋 Wake word detection is active! Just say "Jarvis" or "Hey Jarvis" to activate voice commands.', false);
+  addMessage('💡 Note: This is the web version. I can open web apps like Gmail, Calendar, and YouTube, but cannot open desktop applications.', false);
+  
+  // Start wake word detection after greeting
+  setTimeout(() => {
+    startWakeWordDetection();
+  }, 5000);
+}, 1000);
+>>>>>>> 427cf238d1324ffeaf31f485b1c860a32a15c81a
