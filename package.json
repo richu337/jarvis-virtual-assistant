@@ -1,0 +1,34 @@
+{
+  "name": "jarvis-virtual-assistant",
+  "version": "1.0.0",
+  "description": "Privacy-focused desktop virtual assistant with GUI and voice capabilities",
+  "main": "main.js",
+  "scripts": {
+    "start": "node server.js",
+    "electron": "electron .",
+    "dev": "electron .",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "virtual-assistant",
+    "ai",
+    "voice-assistant",
+    "jarvis",
+    "offline",
+    "privacy"
+  ],
+  "author": "rayhan",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
