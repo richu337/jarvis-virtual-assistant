@@ -1,4 +1,3 @@
-// Detect if running in Electron
 const isElectron = navigator.userAgent.toLowerCase().includes('electron');
 console.log('Running in Electron:', isElectron);
 
