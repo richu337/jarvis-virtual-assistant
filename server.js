@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static('public'));
@@ -80,6 +80,10 @@ app.post('/command', (req, res) => {
   res.json(result);
 });
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', message: 'JARVIS is running' });
+});
+
 app.listen(PORT, () => {
-  console.log(`🤖 JARVIS is running on http://localhost:${PORT}`);
+  console.log(`🤖 JARVIS is running on port ${PORT}`);
 });
