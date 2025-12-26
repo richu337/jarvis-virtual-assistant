@@ -6,11 +6,15 @@ const statusDot = document.getElementById('statusDot');
 const statusText = document.getElementById('statusText');
 
 let recognition = null;
+let wakeWordRecognition = null;
 let isListening = false;
+let isWakeWordActive = true;
 
 // Initialize speech recognition if available
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  // Main command recognition
   recognition = new SpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = false;
@@ -20,7 +24,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     isListening = true;
     voiceBtn.classList.add('listening');
     statusDot.classList.add('listening');
-    statusText.textContent = 'Listening...';
+    statusText.textContent = 'Listening for command...';
   };
   
   recognition.onresult = (event) => {
@@ -34,6 +38,13 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     voiceBtn.classList.remove('listening');
     statusDot.classList.remove('listening');
     statusText.textContent = 'Ready';
+    
+    // Restart wake word detection after command is processed
+    setTimeout(() => {
+      if (isWakeWordActive) {
+        startWakeWordDetection();
+      }
+    }, 1000);
   };
   
   recognition.onerror = (event) => {
@@ -42,14 +53,116 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     voiceBtn.classList.remove('listening');
     statusDot.classList.remove('listening');
     statusText.textContent = 'Ready';
+    
+    // Restart wake word detection on error
+    setTimeout(() => {
+      if (isWakeWordActive) {
+        startWakeWordDetection();
+      }
+    }, 1000);
   };
+  
+  // Wake word detection (continuous listening)
+  wakeWordRecognition = new SpeechRecognition();
+  wakeWordRecognition.continuous = true;
+  wakeWordRecognition.interimResults = true;
+  wakeWordRecognition.lang = 'en-US';
+  
+  wakeWordRecognition.onresult = (event) => {
+    const transcript = Array.from(event.results)
+      .map(result => result[0].transcript)
+      .join('')
+      .toLowerCase();
+    
+    // Check for wake words
+    if (transcript.includes('jarvis') || 
+        transcript.includes('hey jarvis') || 
+        transcript.includes('ok jarvis') ||
+        transcript.includes('hello jarvis')) {
+      
+      // Stop wake word detection
+      wakeWordRecognition.stop();
+      
+      // Play activation sound/feedback
+      speak('Yes, I am listening');
+      
+      // Start command recognition after a short delay
+      setTimeout(() => {
+        if (!isListening) {
+          recognition.start();
+        }
+      }, 1500);
+    }
+  };
+  
+  wakeWordRecognition.onerror = (event) => {
+    if (event.error === 'no-speech' || event.error === 'audio-capture') {
+      // Restart wake word detection on common errors
+      setTimeout(() => {
+        if (isWakeWordActive && !isListening) {
+          startWakeWordDetection();
+        }
+      }, 1000);
+    }
+  };
+  
+  wakeWordRecognition.onend = () => {
+    // Auto-restart wake word detection if it stops
+    if (isWakeWordActive && !isListening) {
+      setTimeout(() => {
+        startWakeWordDetection();
+      }, 500);
+    }
+  };
+  
 } else {
   voiceBtn.style.display = 'none';
+  addMessage('Voice recognition is not supported in your browser. Please use Chrome, Edge, or Safari.', false);
+}
+
+// Start wake word detection
+function startWakeWordDetection() {
+  if (wakeWordRecognition && !isListening) {
+    try {
+      wakeWordRecognition.start();
+      statusText.textContent = 'Say "Jarvis" to activate';
+      statusDot.style.background = '#00ff88';
+    } catch (error) {
+      console.log('Wake word detection already running');
+    }
+  }
+}
+
+// Stop wake word detection
+function stopWakeWordDetection() {
+  if (wakeWordRecognition) {
+    isWakeWordActive = false;
+    wakeWordRecognition.stop();
+    statusText.textContent = 'Wake word disabled';
+    statusDot.style.background = '#ff6666';
+  }
+}
+
+// Toggle wake word detection
+function toggleWakeWord() {
+  if (isWakeWordActive) {
+    stopWakeWordDetection();
+    voiceBtn.textContent = '🔴';
+    voiceBtn.title = 'Wake word OFF - Click to enable';
+  } else {
+    isWakeWordActive = true;
+    startWakeWordDetection();
+    voiceBtn.textContent = '🎤';
+    voiceBtn.title = 'Wake word ON - Say "Jarvis" to activate';
+  }
 }
 
 // Text-to-speech function
 function speak(text) {
   if ('speechSynthesis' in window) {
+    // Cancel any ongoing speech
+    speechSynthesis.cancel();
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
@@ -149,15 +262,8 @@ commandInput.addEventListener('keypress', (e) => {
   }
 });
 
-voiceBtn.addEventListener('click', () => {
-  if (recognition) {
-    if (isListening) {
-      recognition.stop();
-    } else {
-      recognition.start();
-    }
-  }
-});
+// Voice button now toggles wake word detection
+voiceBtn.addEventListener('click', toggleWakeWord);
 
 // Load voices when available
 if ('speechSynthesis' in window) {
@@ -166,7 +272,13 @@ if ('speechSynthesis' in window) {
   };
 }
 
-// Initial greeting
+// Initial greeting and start wake word detection
 setTimeout(() => {
-  speak('Hello! I am JARVIS, your virtual assistant. How may I help you today?');
+  speak('Hello! I am JARVIS, your virtual assistant. Say "Jarvis" anytime to activate me.');
+  addMessage('👋 Wake word detection is active! Just say "Jarvis" or "Hey Jarvis" to activate voice commands.', false);
+  
+  // Start wake word detection after greeting
+  setTimeout(() => {
+    startWakeWordDetection();
+  }, 5000);
 }, 1000);
