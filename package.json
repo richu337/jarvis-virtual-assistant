@@ -1,0 +1,23 @@
+{
+  "name": "jarvis-virtual-assistant",
+  "version": "1.0.0",
+  "description": "Privacy-focused desktop virtual assistant with GUI and voice capabilities",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "virtual-assistant",
+    "ai",
+    "voice-assistant",
+    "jarvis",
+    "offline",
+    "privacy"
+  ],
+  "author": "rayhan",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
