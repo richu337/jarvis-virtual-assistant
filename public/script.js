@@ -239,8 +239,10 @@ async function sendCommand() {
       setTimeout(() => {
         window.open(`https://www.google.com/search?q=${encodeURIComponent(result.query)}`, '_blank');
       }, 1000);
-    } else if (result.action === 'open' && result.app) {
-      addMessage(`Note: Application opening is limited in web environment. In desktop version, ${result.app} would open now.`, false);
+    } else if (result.action === 'open_url' && result.url) {
+      setTimeout(() => {
+        window.open(result.url, '_blank');
+      }, 1000);
     }
     
   } catch (error) {
@@ -276,6 +278,7 @@ if ('speechSynthesis' in window) {
 setTimeout(() => {
   speak('Hello! I am JARVIS, your virtual assistant. Say "Jarvis" anytime to activate me.');
   addMessage('👋 Wake word detection is active! Just say "Jarvis" or "Hey Jarvis" to activate voice commands.', false);
+  addMessage('💡 Note: This is the web version. I can open web apps like Gmail, Calendar, and YouTube, but cannot open desktop applications.', false);
   
   // Start wake word detection after greeting
   setTimeout(() => {
