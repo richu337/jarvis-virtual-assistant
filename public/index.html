@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS - Virtual Assistant</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="arc-reactor"></div>
+      <h1>JARVIS</h1>
+      <p class="subtitle">Just A Rather Very Intelligent System</p>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-indicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Ready</span>
+      </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="welcome-message">
+        <p>👋 Hello! I'm JARVIS, your virtual assistant.</p>
+        <p>Try commands like:</p>
+        <ul>
+          <li>"What time is it?"</li>
+          <li>"Open calculator"</li>
+          <li>"Search for AI news"</li>
+          <li>"Tell me the weather"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <input 
+        type="text" 
+        id="commandInput" 
+        placeholder="Type your command here..." 
+        autocomplete="off"
+      >
+      <button id="sendBtn" class="send-btn">Send</button>
+      <button id="voiceBtn" class="voice-btn" title="Voice Input">🎤</button>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <span class="feature-icon">🖥️</span>
+        <span>System Control</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔍</span>
+        <span>Web Search</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🗣️</span>
+        <span>Voice Output</span>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <span>Privacy First</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
